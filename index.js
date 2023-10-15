@@ -1,8 +1,10 @@
+const fs = require("fs")
+
 function createInterface(obj) {
     if(Array.isArray(obj)) return interfaceFromArray(obj);
     if(!obj) return String(obj);
-    return `{\n${Object.keys(obj).map(k => {
-        let keyStr = `${k.includes('-') ? "'" + k + "'" : k}:`;
+    return ` {\n${Object.keys(obj).map(k => {
+        let keyStr = `${/-|\/|\s/.test(k) ? "'" + k + "'" : k}:`;
         if(typeof obj[k] != 'object')
             return `/**\n * ${obj[k]}\n */\n` + keyStr + typeof obj[k];
         return keyStr + createInterface(obj[k])
@@ -20,7 +22,7 @@ function interfaceFromArray(arr, noArr) {
             if(!p.find(t => t.type == type)) return p.concat({ type, item: c[k] });
             return p;
         }, []);
-        let keyStr = (k.includes('-') ? "'" + k + "'" : k)+ (optionals.includes(k) ? '?' : '') + ': ';
+        let keyStr = (/-|\/|\s/.test(k) ? "'" + k + "'" : k)+ (optionals.includes(k) ? '?' : '') + ': ';
         if(types.find(t => t.type == 'array'))
             return keyStr + interfaceFromArray(allObjs.reduce((p, c) => p.concat(c[k]), []));
         if(types.find(t => t.type == 'object'))
@@ -41,6 +43,6 @@ function interfaceFromArray(arr, noArr) {
 };
 
 
-let interface = createInterface(JSON.parse(fs.readFileSync('input.json', 'utf-8')));
+let interface = "interface newInterface " + createInterface(JSON.parse(fs.readFileSync('input.json', 'utf-8')));
 
-fs.writeFileSync('output.txt', interface)
+fs.writeFileSync('output.ts', interface)
