@@ -1,1 +1,1 @@
-Converts JSON data generally from web api responses and converts them to typescript interfaces
+Converts JSON data generally from web api responses and outputs a correspondin typescript interface
